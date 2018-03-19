@@ -10,14 +10,16 @@
    :make-female
    :make-name
    :malep
-   :femalep))
+   :femalep
+   :make-address
+   :prefecture
+   :city
+   :town))
 (in-package :cl-gimei)
 
 (defparameter *data-directory* (asdf:system-relative-pathname :cl-gimei #p"data/"))
 (defparameter *names-pathname* (merge-pathnames "names.yml" *data-directory*))
 (defparameter *addresses-pathname* (merge-pathnames "addresses.yml" *data-directory*))
-
-(defvar *name-table*)
 
 (defgeneric kanji (name))
 (defgeneric hiragana (name))
@@ -28,6 +30,9 @@
 (defun list-to-item (list)
   (apply #'make-item list))
 
+(defun convert-items (items)
+  (coerce (mapcar #'list-to-item items) 'simple-vector))
+
 (defmethod kanji ((name item))
   (item-kanji name))
 
@@ -37,10 +42,21 @@
 (defmethod katakana ((name item))
   (item-katakana name))
 
+
 (defstruct name-table
   last-name
   male
   female)
+
+(defun load-name-table ()
+  (let* ((table (yaml:parse *names-pathname*))
+         (first-name (gethash "first_name" table))
+         (last-name (gethash "last_name" table)))
+    (make-name-table :last-name (convert-items last-name)
+                     :female (convert-items (gethash "female" first-name))
+                     :male (convert-items (gethash "male" first-name)))))
+
+(defvar *name-table* (load-name-table))
 
 (defclass name ()
   ((first-name :initarg :first-name :reader first-name)
@@ -82,13 +98,50 @@
   (concatenate 'string (katakana (last-name name)) " " (katakana (first-name name))))
 
 
-(defun load-name-table ()
-  (let* ((table (yaml:parse *names-pathname*))
-         (first-name (gethash "first_name" table))
-         (last-name (gethash "last_name" table)))
-    (make-name-table :last-name (coerce (mapcar #'list-to-item last-name) 'simple-vector)
-                     :female (coerce (mapcar #'list-to-item (gethash "female" first-name)) 'simple-vector)
-                     :male (coerce (mapcar #'list-to-item (gethash "male" first-name)) 'simple-vector))))
+(defstruct address-table
+  prefecture
+  city
+  town)
 
-(unless (boundp '*name-table*)
-  (setf *name-table* (load-name-table)))
+(defun load-address-table ()
+  (let* ((table (gethash "addresses" (yaml:parse *addresses-pathname*)))
+         (prefecture (gethash "prefecture" table))
+         (city (gethash "city" table))
+         (town (gethash "town" table)))
+    (make-address-table :prefecture (convert-items prefecture)
+                        :city (convert-items city)
+                        :town (convert-items town))))
+
+(defvar *address-table* (load-address-table))
+
+(defclass address ()
+  ((prefecture
+    :initform (alexandria:random-elt (address-table-prefecture *address-table*))
+    :reader prefecture)
+   (city
+    :initform (alexandria:random-elt (address-table-city *address-table*))
+    :reader city)
+   (town
+    :initform (alexandria:random-elt (address-table-town *address-table*))
+    :reader town)))
+
+(defun make-address ()
+  (make-instance 'address))
+
+(defmethod kanji ((address address))
+  (concatenate 'string
+               (kanji (prefecture address))
+               (kanji (city address))
+               (kanji (town address))))
+
+(defmethod hiragana ((address address))
+  (concatenate 'string
+               (hiragana (prefecture address))
+               (hiragana (city address))
+               (hiragana (town address))))
+
+(defmethod katakana ((address address))
+  (concatenate 'string
+               (katakana (prefecture address))
+               (katakana (city address))
+               (katakana (town address))))

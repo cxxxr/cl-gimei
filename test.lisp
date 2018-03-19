@@ -68,7 +68,7 @@
 (subtest "name.first.kanji"
   (loop :repeat 100 :do
         (let ((name (make-name)))
-          (if (some #'kanji-p(kanji (first-name name)))
+          (if (some #'kanji-p (kanji (first-name name)))
               (pass (kanji name))
               (fail (kanji name))))))
 
@@ -89,7 +89,7 @@
 (subtest "name.last.kanji"
   (loop :repeat 100 :do
         (let ((name (make-name)))
-          (if (some #'kanji-p(kanji (last-name name)))
+          (if (some #'kanji-p (kanji (last-name name)))
               (pass (kanji name))
               (fail (kanji name))))))
 
@@ -106,5 +106,26 @@
           (if (every #'katakana-p (katakana (last-name name)))
               (pass (kanji name))
               (fail (kanji name))))))
+
+(subtest "address.kanji"
+  (loop :repeat 100 :do
+        (let ((address (make-address)))
+          (if (some #'kanji-p (kanji address))
+              (pass (kanji address))
+              (fail (kanji address))))))
+
+(subtest "address.hiragana"
+  (loop :repeat 100 :do
+        (let ((address (make-address)))
+          (if (every #'hiragana-p (hiragana address))
+              (pass (hiragana address))
+              (fail (hiragana address))))))
+
+(subtest "address.katakana"
+  (loop :repeat 100 :do
+        (let ((address (make-address)))
+          (if (every #'katakana-p (katakana address))
+              (pass (katakana address))
+              (fail (katakana address))))))
 
 (finalize)

@@ -1,4 +1,5 @@
 (defpackage :cl-gimei
+  (:nicknames :gimei)
   (:use :cl)
   (:export
    :kanji

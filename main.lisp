@@ -2,6 +2,7 @@
   (:nicknames :cl-gimei :gimei)
   (:use :cl)
   (:import-from :cl-yaml)
+  (:import-from :alexandria :random-elt)
   (:export
    :kanji
    :hiragana
@@ -27,7 +28,8 @@
 (defgeneric hiragana (name))
 (defgeneric katakana (name))
 
-(defstruct (item (:constructor make-item (kanji hiragana katakana))) kanji hiragana katakana)
+(defstruct (item (:constructor make-item (kanji hiragana katakana)))
+  kanji hiragana katakana)
 
 (defun list-to-item (list)
   (apply #'make-item list))
@@ -67,14 +69,14 @@
 (defclass male (name)
   ()
   (:default-initargs
-   :first-name (alexandria:random-elt (name-table-male *name-table*))
-   :last-name (alexandria:random-elt (name-table-last-name *name-table*))))
+   :first-name (random-elt (name-table-male *name-table*))
+   :last-name (random-elt (name-table-last-name *name-table*))))
 
 (defclass female (name)
   ()
   (:default-initargs
-   :first-name (alexandria:random-elt (name-table-female *name-table*))
-   :last-name (alexandria:random-elt (name-table-last-name *name-table*))))
+   :first-name (random-elt (name-table-female *name-table*))
+   :last-name (random-elt (name-table-last-name *name-table*))))
 
 (defun malep (name) (typep name 'male))
 (defun femalep (name) (typep name 'female))
@@ -118,13 +120,13 @@
 
 (defclass address ()
   ((prefecture
-    :initform (alexandria:random-elt (address-table-prefecture *address-table*))
+    :initform (random-elt (address-table-prefecture *address-table*))
     :reader prefecture)
    (city
-    :initform (alexandria:random-elt (address-table-city *address-table*))
+    :initform (random-elt (address-table-city *address-table*))
     :reader city)
    (town
-    :initform (alexandria:random-elt (address-table-town *address-table*))
+    :initform (random-elt (address-table-town *address-table*))
     :reader town)))
 
 (defun make-address ()

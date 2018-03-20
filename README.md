@@ -1,4 +1,6 @@
 # cl-gimei
+[![Build Status](https://travis-ci.org/cxxxr/cl-gimei.svg?branch=master)](https://travis-ci.org/cxxxr/cl-gimei)
+
 Common Lisp port of [gimei](https://github.com/willnet/gimei)
 
 ## Usage

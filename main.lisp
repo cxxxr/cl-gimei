@@ -1,6 +1,7 @@
-(defpackage :cl-gimei
-  (:nicknames :gimei)
+(defpackage :cl-gimei/main
+  (:nicknames :cl-gimei :gimei)
   (:use :cl)
+  (:import-from :cl-yaml)
   (:export
    :kanji
    :hiragana

@@ -1,6 +1,6 @@
-(defpackage :cl-gimei-test
+(defpackage :cl-gimei/test
   (:use :cl :cl-gimei :prove))
-(in-package :cl-gimei-test)
+(in-package :cl-gimei/test)
 
 (plan nil)
 

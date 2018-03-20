@@ -1,5 +1,4 @@
-(defsystem "cl-gimei-test"
-  :depends-on ("cl-gimei" "prove")
-  :serial t
-  :components ((:file "test"))
+(defsystem "cl-gimei/test"
+  :class :package-inferred-system
+  :depends-on ("cl-gimei/test")
   :perform (test-op (o c) (symbol-call :prove '#:run :cl-gimei)))

@@ -1,32 +1,6 @@
 (defpackage :cl-gimei/test
-  (:use :cl :cl-gimei :prove))
+  (:use :cl :cl-gimei :rove))
 (in-package :cl-gimei/test)
-
-(plan nil)
-
-(subtest "male is male"
-  (loop :repeat 100 :do
-        (let ((name (make-male)))
-          (if (and (malep name)
-                   (not (femalep name)))
-              (pass (kanji name))
-              (fail (kanji name))))))
-
-(subtest "female is female"
-  (loop :repeat 100 :do
-        (let ((name (make-female)))
-          (if (and (femalep name)
-                   (not (malep name)))
-              (pass (kanji name))
-              (fail (kanji name))))))
-
-(subtest "name is male or female"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (if (or (malep name)
-                  (femalep name))
-              (pass (kanji name))
-              (fail (kanji name))))))
 
 (defun test (str test-fn)
   (if (funcall test-fn str)
@@ -68,64 +42,88 @@
 (defun katakana-name-p (name)
   (test-name name #'katakana-p))
 
-(subtest "name.kanji"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (test (kanji name) #'kanji-name-p))))
+(deftest name-test
+  (testing "male is male"
+    (loop :repeat 100 :do
+             (let ((name (make-male)))
+               (if (and (malep name)
+                        (not (femalep name)))
+                   (pass (kanji name))
+                   (fail (kanji name))))))
 
-(subtest "name.hiragana"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (test (hiragana name) #'hiragana-name-p))))
+  (testing "female is female"
+    (loop :repeat 100 :do
+             (let ((name (make-female)))
+               (if (and (femalep name)
+                        (not (malep name)))
+                   (pass (kanji name))
+                   (fail (kanji name))))))
 
-(subtest "name.katakana"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (test (katakana name) #'katakana-name-p))))
+  (testing "name is male or female"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (if (or (malep name)
+                       (femalep name))
+                   (pass (kanji name))
+                   (fail (kanji name))))))
 
-(subtest "name.first.kanji"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (test (kanji (first-name name)) #'kanji-str-p))))
+  (testing "name.kanji"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (test (kanji name) #'kanji-name-p))))
 
-(subtest "name.first.hiragana"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (test (hiragana (first-name name)) #'hiragana-str-p))))
+  (testing "name.hiragana"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (test (hiragana name) #'hiragana-name-p))))
 
-(subtest "name.first.katakana"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (test (katakana (first-name name)) #'katakana-str-p))))
+  (testing "name.katakana"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (test (katakana name) #'katakana-name-p))))
 
-(subtest "name.last.kanji"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (test (kanji (last-name name)) #'kanji-str-p))))
+  (testing "name.first.kanji"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (test (kanji (first-name name)) #'kanji-str-p))))
 
-(subtest "name.last.hiragana"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (test (hiragana (last-name name)) #'hiragana-str-p))))
+  (testing "name.first.hiragana"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (test (hiragana (first-name name)) #'hiragana-str-p))))
 
-(subtest "name.last.katakana"
-  (loop :repeat 100 :do
-        (let ((name (make-name)))
-          (test (katakana (last-name name)) #'katakana-str-p))))
+  (testing "name.first.katakana"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (test (katakana (first-name name)) #'katakana-str-p))))
 
-(subtest "address.kanji"
-  (loop :repeat 100 :do
-        (let ((address (make-address)))
-          (test (kanji address) #'kanji-str-p))))
+  (testing "name.last.kanji"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (test (kanji (last-name name)) #'kanji-str-p))))
 
-(subtest "address.hiragana"
-  (loop :repeat 100 :do
-        (let ((address (make-address)))
-          (test (hiragana address) #'hiragana-str-p))))
+  (testing "name.last.hiragana"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (test (hiragana (last-name name)) #'hiragana-str-p))))
 
-(subtest "address.katakana"
-  (loop :repeat 100 :do
-        (let ((address (make-address)))
-          (test (katakana address) #'katakana-str-p))))
+  (testing "name.last.katakana"
+    (loop :repeat 100 :do
+             (let ((name (make-name)))
+               (test (katakana (last-name name)) #'katakana-str-p)))))
 
-(finalize)
+(deftest address-test
+  (testing "address.kanji"
+    (loop :repeat 100 :do
+             (let ((address (make-address)))
+               (test (kanji address) #'kanji-str-p))))
+
+  (testing "address.hiragana"
+    (loop :repeat 100 :do
+             (let ((address (make-address)))
+               (test (hiragana address) #'hiragana-str-p))))
+
+  (testing "address.katakana"
+    (loop :repeat 100 :do
+             (let ((address (make-address)))
+               (test (katakana address) #'katakana-str-p)))))

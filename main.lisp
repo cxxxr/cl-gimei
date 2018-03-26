@@ -17,7 +17,8 @@
    :make-address
    :prefecture
    :city
-   :town))
+   :town
+   :make-phone-number))
 (in-package :cl-gimei)
 
 (defparameter *data-directory* (asdf:system-relative-pathname :cl-gimei #p"data/"))
@@ -149,3 +150,66 @@
                (katakana (prefecture address))
                (katakana (city address))
                (katakana (town address))))
+
+(defun random-range (min max)
+  (+ min (random (1+ (- max min)))))
+
+(defmacro random-case (&body cases)
+  `(case (random ,(length cases))
+     ,@(loop :for n :from 0
+             :for case :in cases
+             :collect `(,n ,case))))
+
+(defun make-phone-number (&key (landline t) (mobile t) (m2m t) (radio-pager t) (ip t)
+                               (reverse-charging t) (prefix-0990 t) (prefix-0570 t))
+  (labels ((gen (str alist)
+             (with-output-to-string (out)
+               (loop :for c :across str
+                     :for fn := (cdr (assoc c alist))
+                     :do (princ (if fn (funcall fn) c) out))))
+           (landline ()
+             (let ((alist `((#\! . ,(lambda () (random-range 2 9)))
+                            (#\? . ,(lambda () (random-range 0 9))))))
+               (random-case
+                 (gen "0?-!???-????" alist)
+                 (gen "0??-!??-????" alist)
+                 (gen "0???-!?-????" alist)
+                 (gen "0????-!-????" alist))))
+           (mobile ()
+             (let ((alist `((#\? . ,(lambda () (random-range 1 9))))))
+               (random-case
+                 (gen "070-????-????" alist)
+                 (gen "080-????-????" alist)
+                 (gen "090-????-????" alist))))
+           (m2m ()
+             (let ((alist `((#\! . ,(lambda () (random-case 1 2 3 5 6 7 8 9)))
+                            (#\? . ,(lambda () (random-range 0 9))))))
+               (gen "020-!??-?????" alist)))
+           (radio-pager ()
+             (let ((alist `((#\? . ,(lambda () (random-range 0 9))))))
+               (gen "020-4??-?????" alist)))
+           (ip ()
+             (let ((alist `((#\A . ,(lambda () (random-range 1 9)))
+                            (#\? . ,(lambda () (random-range 0 9))))))
+               (gen "050-A???-????" alist)))
+           (reverse-charging ()
+             (let ((alist `((#\? . ,(lambda () (random-range 0 9))))))
+               (random-case
+                 (gen "0120-???-???" alist)
+                 (gen "0800-???-???" alist))))
+           (prefix-0990 ()
+             (let ((alist `((#\? . ,(lambda () (random-range 0 9))))))
+               (gen "0990-???-???" alist)))
+           (prefix-0570 ()
+             (let ((alist `((#\? . ,(lambda () (random-range 0 9))))))
+               (gen "0570-???-???" alist))))
+    (let ((functions '()))
+      (when landline (push #'landline functions))
+      (when mobile (push #'mobile functions))
+      (when m2m (push #'m2m functions))
+      (when radio-pager (push #'radio-pager functions))
+      (when ip (push #'ip functions))
+      (when reverse-charging (push #'reverse-charging functions))
+      (when prefix-0990 (push #'prefix-0990 functions))
+      (when prefix-0570 (push #'prefix-0570 functions))
+      (funcall (random-elt functions)))))
